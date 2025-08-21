@@ -2,13 +2,13 @@ const axios = require('axios');
 
 class VendorService {
   constructor() {
-    // No need for Twilio initialization
+    this.baseUrl = process.env.VENDOR_BASE_URL || 'http://localhost:5000';
   }
 
   async sendMessage(message, customer, campaignId) {
     try {
       // Call the internal vendor API endpoint
-      const response = await axios.post('http://localhost:5000/api/vendor/send', {
+      const response = await axios.post(`${this.baseUrl}/api/vendor/send`, {
         message,
         customerId: customer._id,
         customerName: customer.name,
@@ -19,7 +19,7 @@ class VendorService {
       const deliveryReceipt = await this.simulateDeliveryReceipt(response.data.logId);
       
       // Update the message status based on delivery simulation
-      await axios.post('http://localhost:5000/api/vendor/delivery-receipt', {
+      await axios.post(`${this.baseUrl}/api/vendor/delivery-receipt`, {
         logId: response.data.logId,
         status: deliveryReceipt.status,
         errorMessage: deliveryReceipt.errorMessage
