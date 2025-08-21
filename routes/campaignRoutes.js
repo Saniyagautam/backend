@@ -99,6 +99,13 @@ router.post('/generate-suggestions/convert-rules', async (req, res) => {
 router.post('/:id/send', async (req, res) => {
   try {
     const { id } = req.params;
+    const { channel = 'email' } = req.body || {};
+
+    // Currently only email is supported; accept and ignore for now
+    const supportedChannels = ['email'];
+    if (!supportedChannels.includes(channel)) {
+      return res.status(400).json({ error: `Unsupported channel: ${channel}` });
+    }
 
     // Get campaign and its segment
     const campaign = await Campaign.findById(id)
@@ -121,7 +128,8 @@ router.post('/:id/send', async (req, res) => {
       success: true, 
       message: 'Campaign started successfully',
       campaignId: campaign._id,
-      status: campaign.status
+      status: campaign.status,
+      channel
     });
 
   } catch (error) {

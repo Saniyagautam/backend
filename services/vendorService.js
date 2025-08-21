@@ -2,7 +2,11 @@ const axios = require('axios');
 
 class VendorService {
   constructor() {
-    this.baseUrl = process.env.VENDOR_BASE_URL || 'http://localhost:5000';
+    // Prefer explicit base URL, else fall back to current process port
+    const fallbackPort = process.env.PORT || 5000;
+    this.baseUrl = process.env.VENDOR_BASE_URL 
+      || process.env.INTERNAL_BASE_URL 
+      || `http://localhost:${fallbackPort}`;
   }
 
   async sendMessage(message, customer, campaignId) {
